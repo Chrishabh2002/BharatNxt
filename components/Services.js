@@ -1,23 +1,20 @@
-import { SERVICES, SERVICES_INTRO } from "@/lib/data";
 import { Icon } from "./Icons";
 import Reveal from "./Reveal";
 
 const VARIANTS = ["svc--dark", "svc--orange", "svc--gray", "svc--cream"];
 
-export default function Services() {
+export default function Services({ intro, items = [] }) {
   return (
     <section className="section" id="services">
       <div className="container">
         <Reveal className="center">
-          <span className="eyebrow eyebrow--c">{SERVICES_INTRO.eyebrow}</span>
-          <h2 className="h-title">
-            We Offer Great <br /> Number of Legal Services
-          </h2>
+          <span className="eyebrow eyebrow--c">{intro.eyebrow}</span>
+          <h2 className="h-title">{intro.title}</h2>
         </Reveal>
 
         <div className="grid-4 svc-grid" style={{ marginTop: 44 }}>
-          {SERVICES.map((s, i) => (
-            <Reveal key={s.key} delay={i * 80}>
+          {items.map((s, i) => (
+            <Reveal key={s.key || s.title} delay={i * 80}>
               <div className={`svc-card ${VARIANTS[i % 4]}`}>
                 <div className="svc-card__icon">
                   <Icon name={s.icon} size={26} />

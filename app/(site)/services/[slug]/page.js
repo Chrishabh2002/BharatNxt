@@ -1,19 +1,24 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageBanner from "@/components/PageBanner";
-import ContactForm from "@/components/ContactForm";
+import ContactSection from "@/components/ContactSection";
+import RichText from "@/components/RichText";
 import Reveal from "@/components/Reveal";
 import { Icon } from "@/components/Icons";
-import { IMG } from "@/lib/data";
-import { SERVICE_PAGES, ALL_SERVICE_SLUGS, relatedServices } from "@/lib/services";
+import { imageUrl } from "@/sanity/lib/image";
+import { getService, getServiceSlugs } from "@/lib/content";
+import { metadataFrom } from "@/lib/seo";
 
-export function generateStaticParams() {
-  return ALL_SERVICE_SLUGS.map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  const slugs = await getServiceSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
-export function generateMetadata({ params }) {
-  const s = SERVICE_PAGES[params.slug];
-  return { title: s ? `${s.title} — BharatNXT Wave` : "Service — BharatNXT Wave" };
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const s = await getService(slug);
+  if (!s) return { title: "Service" };
+  return metadataFrom(s.seo, { title: s.title, description: s.desc, image: s.image });
 }
 
 const STEPS = [
@@ -23,20 +28,23 @@ const STEPS = [
   { t: "Delivery", d: "You get the result — fast and compliant." },
 ];
 
-export default function ServiceDetail({ params }) {
-  const s = SERVICE_PAGES[params.slug];
+export default async function ServiceDetail({ params }) {
+  const { slug } = await params;
+  const s = await getService(slug);
   if (!s) notFound();
-  const related = relatedServices(params.slug);
+
+  const related = s.related || [];
+  const image = s.image || s.img;
 
   return (
-    <main>
+    <main id="main">
       <PageBanner title={s.title} crumb={s.title} />
 
       {/* intro: image + content */}
       <section className="section">
         <div className="container svcd">
           <Reveal className="svcd__img">
-            <img src={IMG(s.img, 660, 540)} alt={s.title} />
+            <img src={imageUrl(image, 660, 540)} alt={s.title} />
             <span className="svcd__badge"><Icon name={s.icon} size={22} /> {s.group}</span>
           </Reveal>
           <Reveal delay={120}>
@@ -44,7 +52,7 @@ export default function ServiceDetail({ params }) {
             <h2 className="h-title">{s.title}</h2>
             <p className="lead" style={{ marginBottom: 22 }}>{s.intro}</p>
             <div className="about2__list">
-              {s.points.map((p) => (
+              {(s.points || []).map((p) => (
                 <div className="about2__li" key={p}>
                   <span className="about2__check"><Icon name="check" size={16} /></span> {p}
                 </div>
@@ -57,8 +65,17 @@ export default function ServiceDetail({ params }) {
         </div>
       </section>
 
+      {/* optional long-form content, only rendered when an editor writes some */}
+      {s.body?.length > 0 && (
+        <section className="section section--tint">
+          <div className="container container--prose">
+            <RichText value={s.body} />
+          </div>
+        </section>
+      )}
+
       {/* process steps */}
-      <section className="section section--tint">
+      <section className={`section ${s.body?.length ? "" : "section--tint"}`}>
         <div className="container">
           <Reveal className="center">
             <span className="eyebrow eyebrow--c">How It Works</span>
@@ -99,7 +116,7 @@ export default function ServiceDetail({ params }) {
         </section>
       )}
 
-      <ContactForm />
+      <ContactSection />
     </main>
   );
 }

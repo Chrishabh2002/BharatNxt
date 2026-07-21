@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FUNDING, FUNDING_INTRO } from "@/lib/data";
 import { Icon } from "./Icons";
 
 function WaveWord({ word }) {
@@ -16,28 +15,33 @@ function WaveWord({ word }) {
   );
 }
 
-export default function Funding() {
+export default function Funding({ funding }) {
+  const rotate = funding.rotate || [];
   const [idx, setIdx] = useState(0);
+
   useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % FUNDING_INTRO.rotate.length), 2200);
+    if (rotate.length < 2) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % rotate.length), 2200);
     return () => clearInterval(t);
-  }, []);
+  }, [rotate.length]);
 
   return (
     <section className="section section--tint" id="funding">
       <div className="container">
         <div className="center">
           <h2 className="h-title">
-            <span className="accent-o">Secure Government Backed</span>{" "}
-            <span className="rotate-wrap">
-              <WaveWord word={FUNDING_INTRO.rotate[idx]} />
-            </span>
+            <span className="accent-o">{funding.title}</span>{" "}
+            {rotate.length > 0 && (
+              <span className="rotate-wrap">
+                <WaveWord word={rotate[idx % rotate.length]} />
+              </span>
+            )}
           </h2>
-          <p className="lead">{FUNDING_INTRO.sub}</p>
+          <p className="lead">{funding.sub}</p>
         </div>
 
         <div className="fund__grid" style={{ marginTop: 40 }}>
-          {FUNDING.map((f, i) => (
+          {(funding.schemes || []).map((f, i) => (
             <div className="fund" key={f.title + i}>
               <div className="fund__icon">
                 <Icon name={f.icon} size={28} />

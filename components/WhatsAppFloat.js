@@ -1,10 +1,9 @@
-import { COMPANY } from "@/lib/data";
-
-export default function WhatsAppFloat() {
+export default function WhatsAppFloat({ whatsapp }) {
+  if (!whatsapp) return null;
   return (
     <a
       className="wa-float"
-      href={`https://wa.me/${COMPANY.whatsapp}`}
+      href={`https://wa.me/${whatsapp}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"

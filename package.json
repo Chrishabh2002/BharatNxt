@@ -2,15 +2,25 @@
   "name": "bharatnxt",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "seed": "node scripts/seed.mjs",
+    "studio": "sanity dev",
+    "sanity": "sanity"
   },
   "dependencies": {
-    "next": "^15.5.20",
-    "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "@portabletext/react": "^4.0.3",
+    "@sanity/client": "^7.24.0",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/vision": "^6.5.0",
+    "next": "^16.2.10",
+    "next-sanity": "^13.1.4",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "sanity": "^6.5.0",
+    "styled-components": "^6.4.4"
   }
 }

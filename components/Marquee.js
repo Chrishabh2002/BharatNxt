@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { PARTNERS } from "@/lib/data";
+import { imageUrl } from "@/sanity/lib/image";
 
 const EXTS = ["png", "svg", "webp", "jpg", "jpeg"];
 
-// Tries your dropped file -> official logo URL -> wordmark. Never blank.
+// Tries an uploaded logo -> your dropped file -> official logo URL -> wordmark.
+// Never blank.
 function PartnerLogo({ p }) {
   const [okSrc, setOkSrc] = useState(null);
   useEffect(() => {
     const cands = [];
+    // A logo uploaded in the Studio is authoritative — try it first.
+    if (p.logo && typeof p.logo === "object") cands.push(imageUrl(p.logo, 260, 130));
     if (p.base) EXTS.forEach((e) => cands.push(`${p.base}.${e}`));
-    if (p.logo) cands.push(p.logo);
+    if (p.logo && typeof p.logo === "string") cands.push(p.logo);
     if (!cands.length) return;
     let alive = true;
     let i = 0;
@@ -41,10 +44,10 @@ function PartnerLogo({ p }) {
   );
 }
 
-const ITEMS = PARTNERS;        // one bubble per partner
-const R = 60;                  // bubble radius
+const R = 60; // bubble radius
 
-export default function Marquee() {
+export default function Marquee({ partners = [] }) {
+  const ITEMS = partners; // one bubble per partner
   const fieldRef = useRef(null);
   const elRefs = useRef([]);
 
@@ -148,7 +151,9 @@ export default function Marquee() {
       field.removeEventListener("mouseleave", onLeave);
       window.removeEventListener("resize", onResize);
     };
-  }, []);
+    // Re-seed the simulation when the number of partners changes — the bubble
+    // positions array is sized once, so a stale count would drop or orphan one.
+  }, [ITEMS]);
 
   return (
     <section className="section partners">

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { COMPANY, SERVICES, HEAD_OFFICE, BRANCHES } from "@/lib/data";
 import { Icon } from "./Icons";
 
-export default function ContactForm() {
+export default function ContactForm({ settings, contact, serviceMenu = [] }) {
   const [status, setStatus] = useState({ state: "idle", msg: "" });
+  const headOffice = contact.headOffice || {};
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -44,25 +44,30 @@ export default function ContactForm() {
             Start Your <span className="accent">Application</span>
           </h2>
           <p className="lead" style={{ marginBottom: 26 }}>
-            It's our pleasure to have a chance to cooperate. Tell us about your startup and we'll map
-            the right path.
+            It&apos;s our pleasure to have a chance to cooperate. Tell us about your startup and
+            we&apos;ll map the right path.
           </p>
 
           <div className="ci">
             <div className="ci__ic"><Icon name="phone" size={22} /></div>
-            <div><b>Have Any Questions?</b><span>{COMPANY.phone}</span></div>
+            <div><b>Have Any Questions?</b><span>{settings.phone}</span></div>
           </div>
           <div className="ci">
             <div className="ci__ic"><Icon name="mail" size={22} /></div>
-            <div><b>Mail Us</b><span>{COMPANY.email}</span></div>
+            <div><b>Mail Us</b><span>{settings.email}</span></div>
           </div>
-          <div className="ci">
-            <div className="ci__ic"><Icon name="pin" size={22} /></div>
-            <div><b>{HEAD_OFFICE.title} — {HEAD_OFFICE.label}</b><span>{HEAD_OFFICE.addr}</span></div>
-          </div>
+          {headOffice.addr && (
+            <div className="ci">
+              <div className="ci__ic"><Icon name="pin" size={22} /></div>
+              <div>
+                <b>{headOffice.title}{headOffice.label ? ` — ${headOffice.label}` : ""}</b>
+                <span>{headOffice.addr}</span>
+              </div>
+            </div>
+          )}
 
           <div className="offices">
-            {BRANCHES.map((o, i) => (
+            {(contact.branches || []).map((o, i) => (
               <div className="office" key={i}>
                 <b>{o.city} — Branch Office</b>
                 <p>{o.addr}</p>
@@ -73,7 +78,7 @@ export default function ContactForm() {
 
         <form className="form-card" onSubmit={handleSubmit}>
           <h3>Start Your Application</h3>
-          <p className="fc-sub">Fill the form — data securely saved & our team will reach out.</p>
+          <p className="fc-sub">Fill the form — data securely saved &amp; our team will reach out.</p>
           <div className="field">
             <label htmlFor="name">Full Name *</label>
             <input id="name" name="name" type="text" required placeholder="Aapka naam" />
@@ -90,10 +95,18 @@ export default function ContactForm() {
           </div>
           <div className="field">
             <label htmlFor="service">Interested Service</label>
-            <select id="service" name="service" defaultValue={SERVICES[0].title}>
-              {SERVICES.map((s) => (
-                <option key={s.key} value={s.title}>{s.title}</option>
+            {/* Grouped by category so a 40-item list stays scannable, and so the
+                lead that lands in the sheet names the exact service asked for. */}
+            <select id="service" name="service" defaultValue="">
+              <option value="">Select a service</option>
+              {serviceMenu.map((g) => (
+                <optgroup label={g.group} key={g.group}>
+                  {g.items.map((it) => (
+                    <option key={it.slug} value={it.title}>{it.title}</option>
+                  ))}
+                </optgroup>
               ))}
+              <option value="Something else">Something else</option>
             </select>
           </div>
           <div className="field">

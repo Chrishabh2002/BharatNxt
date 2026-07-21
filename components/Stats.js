@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { STATS } from "@/lib/data";
 import { Icon } from "./Icons";
 
 function Counter({ value, suffix }) {
@@ -37,12 +36,12 @@ function Counter({ value, suffix }) {
   );
 }
 
-export default function Stats() {
+export default function Stats({ stats = [] }) {
   return (
     <section className="section stats-wrap">
       <div className="container">
         <div className="stats-box">
-          {STATS.map((s) => (
+          {stats.map((s) => (
             <div className="stat" key={s.label}>
               <div className="stat__ic">
                 <Icon name={s.icon} size={30} />

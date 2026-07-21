@@ -1,36 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { PORTFOLIO, PORTFOLIO_CATS, PORTFOLIO_INTRO, PORTFOLIO_INITIAL, IMG } from "@/lib/data";
+import { imageUrl } from "@/sanity/lib/image";
 import { Icon } from "./Icons";
 
-export default function Portfolio() {
-  const [cat, setCat] = useState("All");
-  const [limit, setLimit] = useState(PORTFOLIO_INITIAL);
+const INITIAL = 9;
+
+export default function Portfolio({ intro, categories = [], items: all = [] }) {
+  const [cat, setCat] = useState(categories[0] || "All");
+  const [limit, setLimit] = useState(INITIAL);
   const [lightbox, setLightbox] = useState(null); // {src, title}
 
-  const filtered = cat === "All" ? PORTFOLIO : PORTFOLIO.filter((p) => p.cat === cat);
+  const filtered = cat === "All" ? all : all.filter((p) => p.cat === cat);
   const items = filtered.slice(0, limit);
   const hasMore = filtered.length > limit;
 
   function onFilter(c) {
     setCat(c);
-    setLimit(PORTFOLIO_INITIAL);
+    setLimit(INITIAL);
   }
 
   return (
     <section className="section section--tint" id="portfolio">
       <div className="container">
         <div className="center">
-          <span className="eyebrow eyebrow--c">{PORTFOLIO_INTRO.eyebrow}</span>
+          <span className="eyebrow eyebrow--c">{intro.eyebrow}</span>
           <h2 className="h-title">
-            Projects We're <span className="accent">Proud Of</span>
+            Projects We&apos;re <span className="accent">Proud Of</span>
           </h2>
-          <p className="lead">{PORTFOLIO_INTRO.text}</p>
+          <p className="lead">{intro.text}</p>
         </div>
 
         <div className="pf__filter">
-          {PORTFOLIO_CATS.map((c) => (
+          {categories.map((c) => (
             <button key={c} className={`pf__btn ${cat === c ? "pf__btn--active" : ""}`} onClick={() => onFilter(c)}>
               {c}
             </button>
@@ -38,8 +40,10 @@ export default function Portfolio() {
         </div>
 
         <div className="pf__grid">
-          {items.map((p) =>
-            p.badge ? (
+          {items.map((p) => {
+            // Certifications are drawn as coloured badges; everything else is a photo.
+            const src = imageUrl(p.image || p.img, 520, 400);
+            return p.badge?.big ? (
               <div className="pf__item pf__badge" key={p.title} style={{ background: p.badge.bg, color: p.badge.fg }}>
                 <span className="pf__badge-big">{p.badge.big}</span>
                 <span className="pf__badge-small">{p.badge.small}</span>
@@ -47,12 +51,14 @@ export default function Portfolio() {
               </div>
             ) : (
               <div className="pf__item" key={p.title}>
-                <img src={IMG(p.img, 520, 400)} alt={p.title} loading="lazy" />
+                <img src={src} alt={p.title} loading="lazy" />
                 <div className="pf__overlay">
                   <button
                     className="pf__plus"
                     aria-label={`View ${p.title}`}
-                    onClick={() => setLightbox({ src: IMG(p.img, 1100, 800), title: p.title })}
+                    onClick={() =>
+                      setLightbox({ src: imageUrl(p.image || p.img, 1100, 800), title: p.title })
+                    }
                   >
                     +
                   </button>
@@ -60,8 +66,8 @@ export default function Portfolio() {
                   <span>{p.cat}</span>
                 </div>
               </div>
-            )
-          )}
+            );
+          })}
         </div>
 
         {hasMore && (

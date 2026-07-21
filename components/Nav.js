@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_LINKS, COMPANY } from "@/lib/data";
-import { SERVICE_MENU } from "@/lib/services";
 import { Icon } from "./Icons";
 
 const SOCIALS = [
@@ -14,7 +12,11 @@ const SOCIALS = [
   { name: "instagram", cls: "ig", href: "#" },
 ];
 
-export default function Nav() {
+export default function Nav({ links = [], serviceMenu = [], whatsapp }) {
+  // The mega-menu blurb quotes a service count, so derive it rather than
+  // letting a hardcoded number drift as editors add services.
+  const serviceCount = serviceMenu.reduce((n, g) => n + (g.items?.length || 0), 0);
+
   const [open, setOpen] = useState(false); // mobile menu
   const [svcOpen, setSvcOpen] = useState(false); // mobile services accordion
   const [megaOpen, setMegaOpen] = useState(false); // desktop mega (click)
@@ -57,8 +59,8 @@ export default function Nav() {
     <header className={`nav ${scrolled ? "nav--scrolled" : ""}`}>
       <div className="container nav__inner">
         <nav className="nav__links">
-          {NAV_LINKS.map((l) =>
-            l.children ? (
+          {links.map((l) =>
+            l.children?.length ? (
               <div
                 key={l.label}
                 className={`nav__has-mega ${megaOpen ? "is-open" : ""}`}
@@ -78,7 +80,7 @@ export default function Nav() {
                 <span className="mega-backdrop" aria-hidden="true" onClick={() => setMegaOpen(false)} />
                 <div className="mega" role="menu">
                   <div className="mega__inner">
-                    {SERVICE_MENU.map((g) => (
+                    {serviceMenu.map((g) => (
                       <div className="mega__col" key={g.group}>
                         <div className="mega__head">
                           <span className="mega__ic"><Icon name={g.icon} size={16} /></span>
@@ -98,7 +100,10 @@ export default function Nav() {
                   </div>
                   <div className="mega__cta">
                     <div className="mega__cta-inner">
-                      <span><b>40+ services</b> to launch &amp; grow your startup — all under one roof.</span>
+                      <span>
+                        <b>{serviceCount}+ services</b> to launch &amp; grow your startup — all
+                        under one roof.
+                      </span>
                       <Link className="btn btn--primary" href="/services" onClick={() => setMegaOpen(false)}>
                         View All Services <Icon name="arrow" size={16} />
                       </Link>
@@ -120,7 +125,7 @@ export default function Nav() {
               <a
                 key={s.name}
                 className={`soc soc--${s.cls}`}
-                href={s.name === "whatsapp" ? `https://wa.me/${COMPANY.whatsapp}` : s.href}
+                href={s.name === "whatsapp" ? `https://wa.me/${whatsapp}` : s.href}
                 aria-label={s.name}
               >
                 <Icon name={s.name} size={15} />
@@ -138,15 +143,15 @@ export default function Nav() {
 
       {/* mobile */}
       <div className={`nav__mobile ${open ? "nav__mobile--open" : ""}`}>
-        {NAV_LINKS.map((l) =>
-          l.children ? (
+        {links.map((l) =>
+          l.children?.length ? (
             <div key={l.label}>
               <button className="nav__mobile-acc" onClick={() => setSvcOpen((v) => !v)}>
                 {l.label} <span>{svcOpen ? "–" : "+"}</span>
               </button>
               {svcOpen && (
                 <div className="nav__mobile-sub">
-                  {SERVICE_MENU.map((g) => (
+                  {serviceMenu.map((g) => (
                     <div key={g.group}>
                       <b>{g.group}</b>
                       {g.items.map((it) => (

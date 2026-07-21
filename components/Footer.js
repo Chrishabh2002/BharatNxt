@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Logo from "./Logo";
 import { Icon } from "./Icons";
-import { COMPANY, FOOTER } from "@/lib/data";
 
 function Social({ cls, label, d, href = "#" }) {
   return (
@@ -13,16 +12,18 @@ function Social({ cls, label, d, href = "#" }) {
   );
 }
 
-export default function Footer() {
+export default function Footer({ settings }) {
+  const { footer } = settings;
+
   return (
     <footer className="footer">
       {/* purple top bar: logo + tagline */}
       <div className="footer__top">
         <div className="container footer__top-in">
-          <Link href="/" className="footer__logo" aria-label="BharatNXT Wave home">
+          <Link href="/" className="footer__logo" aria-label={`${settings.name} home`}>
             <Logo height={52} />
           </Link>
-          <p className="footer__tagline">{FOOTER.tagline}</p>
+          <p className="footer__tagline">{footer.tagline}</p>
         </div>
       </div>
 
@@ -47,9 +48,9 @@ export default function Footer() {
             <div className="footer__col">
               <h5>Quick Links</h5>
               <ul className="footer__links">
-                {FOOTER.quickLinks.map((l) => (
-                  <li key={l.href}>
-                    <Link href={l.href}>{l.label}</Link>
+                {footer.quickLinks.map((l) => (
+                  <li key={l.href || l.label}>
+                    <Link href={l.href || "/"}>{l.label}</Link>
                   </li>
                 ))}
               </ul>
@@ -58,11 +59,11 @@ export default function Footer() {
             {/* For Consultation */}
             <div className="footer__col footer__col--bordered">
               <h5>For Consultation</h5>
-              <a className="footer__contact" href={`tel:${COMPANY.phoneHref}`}>
-                <Icon name="phone" size={18} /> {COMPANY.phone}
+              <a className="footer__contact" href={`tel:${settings.phoneHref}`}>
+                <Icon name="phone" size={18} /> {settings.phone}
               </a>
-              <a className="footer__contact" href={`mailto:${COMPANY.email}`}>
-                <Icon name="mail" size={18} /> {COMPANY.email}
+              <a className="footer__contact" href={`mailto:${settings.email}`}>
+                <Icon name="mail" size={18} /> {settings.email}
               </a>
               <div className="footer__socials">
                 <Social cls="fb" label="Facebook" d="M13 22v-8h3l1-4h-4V8c0-1 .3-2 2-2h2V2.1C18 2 17 2 16 2c-3 0-5 1.8-5 5v3H8v4h3v8h2Z" />
@@ -74,8 +75,8 @@ export default function Footer() {
             {/* Locations */}
             <div className="footer__col footer__col--bordered">
               <h5>Locations</h5>
-              {FOOTER.offices.map((o) => (
-                <p className="footer__addr" key={o.city}>
+              {footer.offices.map((o, i) => (
+                <p className="footer__addr" key={`${o.city}-${i}`}>
                   <b>{o.city}:-</b> {o.addr}
                 </p>
               ))}
@@ -83,7 +84,7 @@ export default function Footer() {
           </div>
 
           <div className="footer__disclaimer">
-            {FOOTER.disclaimer.map((d, i) => (
+            {footer.disclaimer.map((d, i) => (
               <p key={i}>{d}</p>
             ))}
           </div>
@@ -93,7 +94,7 @@ export default function Footer() {
       {/* purple bottom bar */}
       <div className="footer__bar">
         <div className="container footer__bar-in">
-          <span>© {new Date().getFullYear()} {COMPANY.name}. All Rights Reserved</span>
+          <span>© {new Date().getFullYear()} {settings.name}. All Rights Reserved</span>
           <span className="footer__legal">
             <Link href="#">Privacy Policy</Link>
             <i>|</i>

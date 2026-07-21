@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { FOOTPRINT } from "@/lib/data";
 
 // scattered glowing dots + links — evokes the original's India network map
 const DOTS = [
@@ -45,7 +44,7 @@ function Ring({ pct, label }) {
   );
 }
 
-export default function Footprint() {
+export default function Footprint({ footprint }) {
   const ref = useRef(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
@@ -63,10 +62,10 @@ export default function Footprint() {
       <div className="container">
         <div className="fp__top">
           <div ref={ref}>
-            <span className="eyebrow eyebrow--c">{FOOTPRINT.eyebrow}</span>
-            <h2 className="h-title" style={{ color: "#fff" }}>{FOOTPRINT.title}</h2>
+            <span className="eyebrow eyebrow--c">{footprint.eyebrow}</span>
+            <h2 className="h-title" style={{ color: "#fff" }}>{footprint.title}</h2>
             <div className="fp__bars">
-              {FOOTPRINT.states.map((s, i) => (
+              {(footprint.states || []).map((s, i) => (
                 <div className="fp__bar" key={s.name}>
                   <div className="fp__bar-head">
                     <span className="fp__bar-name">{s.name}</span>
@@ -105,7 +104,7 @@ export default function Footprint() {
         </div>
 
         <div className="fp__rings">
-          {FOOTPRINT.sectors.map((s) => (
+          {(footprint.sectors || []).map((s) => (
             <Ring key={s.name} pct={s.pct} label={s.name} />
           ))}
         </div>

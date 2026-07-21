@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { FAQS } from "@/lib/data";
 
-export default function Faq() {
+export default function Faq({ items = [] }) {
   const [open, setOpen] = useState(0);
   return (
     <div className="faq">
-      {FAQS.map((f, i) => {
+      {items.map((f, i) => {
         const isOpen = open === i;
         return (
           <div className={`faq__item ${isOpen ? "faq__item--open" : ""}`} key={i}>
@@ -15,7 +14,7 @@ export default function Faq() {
               <span>{f.q}</span>
               <span className="faq__plus">{isOpen ? "–" : "+"}</span>
             </button>
-            <div className="faq__a" style={{ maxHeight: isOpen ? 240 : 0 }}>
+            <div className="faq__a" style={{ maxHeight: isOpen ? 400 : 0 }}>
               <p>{f.a}</p>
             </div>
           </div>

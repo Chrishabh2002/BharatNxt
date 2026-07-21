@@ -1,22 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { HERO, IMG, HERO_IMAGES } from "@/lib/data";
+import { imageUrl } from "@/sanity/lib/image";
 import { Icon } from "./Icons";
 
-export default function Hero() {
+export default function Hero({ hero }) {
+  const images = hero.images || [];
   const [active, setActive] = useState(0);
 
   useEffect(() => {
-    const t = setInterval(
-      () => setActive((a) => (a + 1) % HERO_IMAGES.length),
-      5000
-    );
+    if (images.length < 2) return;
+    const t = setInterval(() => setActive((a) => (a + 1) % images.length), 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [images.length]);
 
   // one wide set (phrases repeated) + a duplicate for a seamless loop
-  const oneSet = [...HERO.marquee, ...HERO.marquee, ...HERO.marquee];
+  const oneSet = [...hero.marquee, ...hero.marquee, ...hero.marquee];
   const banner = [...oneSet, ...oneSet];
 
   return (
@@ -35,26 +34,26 @@ export default function Hero() {
 
       <div className="hero__stage">
         <div className="hero__bg">
-          {HERO_IMAGES.map((id, i) => (
+          {images.map((img, i) => (
             <div
-              key={id}
+              key={i}
               className={`hero__slide ${i === active ? "hero__slide--active" : ""}`}
               aria-hidden={i !== active}
             >
-              <img src={IMG(id, 1600, 900)} alt="" loading={i === 0 ? "eager" : "lazy"} />
+              <img src={imageUrl(img, 1600, 900)} alt="" loading={i === 0 ? "eager" : "lazy"} />
             </div>
           ))}
           <span className="hero__shade" />
         </div>
 
         <div className="container hero__overlay">
-          <span className="hero__eyebrow">{HERO.eyebrow}</span>
+          <span className="hero__eyebrow">{hero.eyebrow}</span>
           <h1 className="hero__headline">
             <span className="o">Legal</span> से <span className="o">Finance</span> तक,
             <br />
             सबका <span className="o">Solution</span> एक साथ!
           </h1>
-          <p className="hero__sub">{HERO.sub}</p>
+          <p className="hero__sub">{hero.sub}</p>
           <div className="hero__actions">
             <a className="btn btn--primary" href="#contact">
               Download Brochure <Icon name="arrow" size={16} />
@@ -65,17 +64,19 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="hero__dots" role="tablist" aria-label="Hero slides">
-          {HERO_IMAGES.map((_, i) => (
-            <button
-              key={i}
-              className={`hero__dot ${i === active ? "hero__dot--active" : ""}`}
-              onClick={() => setActive(i)}
-              aria-label={`Slide ${i + 1}`}
-              aria-selected={i === active}
-            />
-          ))}
-        </div>
+        {images.length > 1 && (
+          <div className="hero__dots" role="tablist" aria-label="Hero slides">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                className={`hero__dot ${i === active ? "hero__dot--active" : ""}`}
+                onClick={() => setActive(i)}
+                aria-label={`Slide ${i + 1}`}
+                aria-selected={i === active}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

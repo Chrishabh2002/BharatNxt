@@ -1,16 +1,18 @@
 import Link from "next/link";
 import PageBanner from "@/components/PageBanner";
 import Funding from "@/components/Funding";
-import ContactForm from "@/components/ContactForm";
+import ContactSection from "@/components/ContactSection";
 import Reveal from "@/components/Reveal";
 import { Icon } from "@/components/Icons";
-import { SERVICE_MENU } from "@/lib/services";
+import { getServiceMenu, getHome } from "@/lib/content";
 
-export const metadata = { title: "Services — BharatNXT Wave" };
+export const metadata = { title: "Services" };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const [serviceMenu, home] = await Promise.all([getServiceMenu(), getHome()]);
+
   return (
-    <main>
+    <main id="main">
       <PageBanner title="Our Services" crumb="Services" />
 
       <section className="section">
@@ -27,7 +29,7 @@ export default function ServicesPage() {
           </Reveal>
 
           <div className="svc-groups">
-            {SERVICE_MENU.map((g, gi) => (
+            {serviceMenu.map((g, gi) => (
               <Reveal key={g.group} delay={gi * 60}>
                 <div className="svc-group">
                   <div className="svc-group__head">
@@ -50,8 +52,8 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <Funding />
-      <ContactForm />
+      <Funding funding={home.funding} />
+      <ContactSection />
     </main>
   );
 }
