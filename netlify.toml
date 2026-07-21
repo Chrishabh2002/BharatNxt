@@ -1,0 +1,13 @@
+# Build command, publish directory and the Next.js plugin are configured in the
+# Netlify UI. This file only carries settings that belong in version control.
+
+[build.environment]
+  # Netlify's secrets scanner fails the build when an env var's value shows up
+  # in the build output. These three are public by design — NEXT_PUBLIC_* is
+  # compiled into the browser bundle on purpose, and a Sanity project id is not
+  # a credential. `production` in particular matches thousands of unrelated
+  # lines inside Next.js's own compiled files.
+  #
+  # Scanning stays ON for everything else, so a genuine secret (the Google
+  # Apps Script URL, a Sanity write token) would still fail the build.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SANITY_PROJECT_ID,NEXT_PUBLIC_SANITY_DATASET,NEXT_PUBLIC_SITE_URL"
