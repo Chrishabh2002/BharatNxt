@@ -4,7 +4,42 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import ScrollProgress from "@/components/ScrollProgress";
-import { getSettings, getNav, getServiceMenu } from "@/lib/content";
+import { getSettings, getNav, getServiceMenu, splitOffices } from "@/lib/content";
+
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://bharatnxtwave.com").replace(/\/$/, "");
+
+// Organization markup, built from the same office list the footer renders.
+// The address is kept as one free-text street line on purpose — splitting a
+// typed address into city/state/postcode by guesswork is how wrong data gets
+// published to Google.
+function organizationSchema(settings) {
+  const { head, branches } = splitOffices(settings.offices);
+  const postal = (o) => ({
+    "@type": "PostalAddress",
+    streetAddress: o.addr,
+    addressCountry: "IN",
+  });
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: settings.name,
+    legalName: settings.legalName,
+    url: SITE_URL,
+    email: settings.email,
+    telephone: settings.phoneHref,
+    ...(head ? { address: postal(head) } : {}),
+    ...(branches.length ? { location: branches.map((o) => ({ "@type": "Place", name: o.city, address: postal(o) })) } : {}),
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      telephone: settings.phoneHref,
+      email: settings.email,
+      areaServed: "IN",
+      availableLanguage: ["en", "hi"],
+    },
+  };
+}
 
 export async function generateMetadata() {
   const s = await getSettings();
@@ -45,6 +80,10 @@ export default async function SiteLayout({ children }) {
         {children}
         <Footer settings={settings} />
         <WhatsAppFloat whatsapp={settings.whatsapp} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema(settings)) }}
+        />
       </body>
     </html>
   );

@@ -75,7 +75,7 @@ export default function Footer({ settings }) {
             {/* Locations */}
             <div className="footer__col footer__col--bordered">
               <h5>Locations</h5>
-              {footer.offices.map((o, i) => (
+              {settings.offices.map((o, i) => (
                 <p className="footer__addr" key={`${o.city}-${i}`}>
                   <b>{o.city}:-</b> {o.addr}
                 </p>

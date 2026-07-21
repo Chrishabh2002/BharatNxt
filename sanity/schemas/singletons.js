@@ -13,6 +13,7 @@ export const siteSettings = defineType({
   groups: [
     { name: "company", title: "Company", default: true },
     { name: "contact", title: "Contact details" },
+    { name: "offices", title: "Offices" },
     { name: "footer", title: "Footer" },
   ],
   fields: [
@@ -72,18 +73,57 @@ export const siteSettings = defineType({
       of: [defineArrayMember({ type: "navLink" })],
     }),
     defineField({
-      name: "footerOffices",
-      title: "Footer office addresses",
+      name: "offices",
+      title: "Office addresses",
       type: "array",
-      group: "footer",
+      group: "offices",
+      description:
+        "Edited once, shown everywhere: the footer, the Contact page and the enquiry block at the bottom of every page.",
       of: [
         defineArrayMember({
           type: "object",
           fields: [
-            defineField({ name: "city", title: "Label", type: "string", description: 'e.g. "Head Office" or "Jaipur".' }),
-            defineField({ name: "addr", title: "Address", type: "text", rows: 3 }),
+            defineField({
+              name: "city",
+              title: "Name",
+              type: "string",
+              description: 'e.g. "Head Office" or "Jaipur".',
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: "addr",
+              title: "Address",
+              type: "text",
+              rows: 3,
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: "isHead",
+              title: "This is the head office",
+              type: "boolean",
+              initialValue: false,
+              description: "Tick one. It gets the prominent spot on the contact block.",
+            }),
+            defineField({
+              name: "label",
+              title: "Small label",
+              type: "string",
+              description: 'Optional, e.g. "Visit Us Daily".',
+            }),
+            defineField({
+              name: "mapEmbedUrl",
+              title: "Google Maps embed link",
+              type: "url",
+              description: "Optional. In Google Maps: Share → Embed a map → copy the src=\"…\" URL.",
+            }),
           ],
-          preview: { select: { title: "city", subtitle: "addr" } },
+          preview: {
+            select: { title: "city", subtitle: "addr", isHead: "isHead" },
+            prepare: ({ title, subtitle, isHead }) => ({
+              title: isHead ? `${title} (head office)` : title,
+              subtitle,
+            }),
+          },
         }),
       ],
     }),
@@ -335,35 +375,13 @@ export const contactPage = defineType({
     defineField({ name: "heading", title: "Page heading", type: "string" }),
     defineField({ name: "intro", title: "Intro paragraph", type: "text", rows: 3 }),
     defineField({
-      name: "headOffice",
-      title: "Head office",
-      type: "object",
-      fields: [
-        defineField({ name: "title", title: "Title", type: "string" }),
-        defineField({ name: "label", title: "Small label", type: "string" }),
-        defineField({ name: "addr", title: "Address", type: "text", rows: 3 }),
-      ],
-    }),
-    defineField({
-      name: "branches",
-      title: "Branch offices",
-      type: "array",
-      of: [
-        defineArrayMember({
-          type: "object",
-          fields: [
-            defineField({ name: "city", title: "City", type: "string" }),
-            defineField({ name: "addr", title: "Address", type: "text", rows: 3 }),
-          ],
-          preview: { select: { title: "city", subtitle: "addr" } },
-        }),
-      ],
-    }),
-    defineField({
-      name: "mapEmbedUrl",
-      title: "Google Maps embed link",
-      type: "url",
-      description: "Optional. In Google Maps: Share → Embed a map → copy the src=\"…\" URL.",
+      name: "note",
+      title: "Where are the addresses?",
+      type: "string",
+      readOnly: true,
+      initialValue: "Office addresses are edited once, under Site settings → Offices.",
+      description:
+        "They appear on this page, in the footer and in the enquiry block automatically.",
     }),
     defineField({ name: "seo", title: "Search engine listing", type: "seo" }),
   ],

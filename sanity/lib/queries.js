@@ -8,7 +8,7 @@ export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]{
   phone, phoneHref, whatsapp, email, hours,
   footerTagline,
   quickLinks[]{ label, href },
-  footerOffices[]{ city, addr },
+  offices[]{ city, addr, isHead, label, mapEmbedUrl },
   disclaimer
 }`;
 
@@ -34,13 +34,7 @@ export const homePageQuery = groq`*[_type == "homePage"][0]{
 
 export const aboutPageQuery = groq`*[_type == "aboutPage"][0]{ heading, intro, body, ${SEO} }`;
 
-export const contactPageQuery = groq`*[_type == "contactPage"][0]{
-  heading, intro,
-  headOffice{ title, label, addr },
-  branches[]{ city, addr },
-  mapEmbedUrl,
-  ${SEO}
-}`;
+export const contactPageQuery = groq`*[_type == "contactPage"][0]{ heading, intro, ${SEO} }`;
 
 // Services, grouped for the mega-menu. Empty categories are filtered out in
 // lib/content.js rather than here — a post-projection filter is easy to get

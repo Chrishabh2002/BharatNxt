@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { Icon } from "./Icons";
 
-export default function ContactForm({ settings, contact, serviceMenu = [] }) {
+export default function ContactForm({ settings, headOffice, branches = [], serviceMenu = [] }) {
   const [status, setStatus] = useState({ state: "idle", msg: "" });
-  const headOffice = contact.headOffice || {};
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -56,20 +55,20 @@ export default function ContactForm({ settings, contact, serviceMenu = [] }) {
             <div className="ci__ic"><Icon name="mail" size={22} /></div>
             <div><b>Mail Us</b><span>{settings.email}</span></div>
           </div>
-          {headOffice.addr && (
+          {headOffice?.addr && (
             <div className="ci">
               <div className="ci__ic"><Icon name="pin" size={22} /></div>
               <div>
-                <b>{headOffice.title}{headOffice.label ? ` — ${headOffice.label}` : ""}</b>
+                <b>{headOffice.city}{headOffice.label ? ` — ${headOffice.label}` : ""}</b>
                 <span>{headOffice.addr}</span>
               </div>
             </div>
           )}
 
           <div className="offices">
-            {(contact.branches || []).map((o, i) => (
+            {branches.map((o, i) => (
               <div className="office" key={i}>
-                <b>{o.city} — Branch Office</b>
+                <b>{o.city}{o.label ? ` — ${o.label}` : ""}</b>
                 <p>{o.addr}</p>
               </div>
             ))}

@@ -15,10 +15,10 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  COMPANY, FOOTER, NAV_LINKS, HERO, HERO_IMAGES, IMAGES,
+  COMPANY, FOOTER, OFFICES, NAV_LINKS, HERO, HERO_IMAGES, IMAGES,
   SERVICES_INTRO, SERVICES, FUNDING_INTRO, FUNDING, CORE_VALUES,
   FOOTPRINT, PORTFOLIO_INTRO, PORTFOLIO_CATS, PORTFOLIO, STATS,
-  TESTIMONIALS, ABOUT_TEXT, HEAD_OFFICE, BRANCHES, PARTNERS,
+  TESTIMONIALS, ABOUT_TEXT, PARTNERS,
   FAQS, BLOG_POSTS,
 } from "../lib/data.js";
 import { SERVICE_MENU, SERVICE_PAGES, slugify } from "../lib/services.js";
@@ -131,7 +131,12 @@ async function build() {
     ...COMPANY,
     footerTagline: FOOTER.tagline,
     quickLinks: keyed(FOOTER.quickLinks, (l) => ({ _type: "navLink", label: l.label, href: l.href })),
-    footerOffices: keyed(FOOTER.offices, (o) => ({ city: o.city, addr: o.addr })),
+    offices: keyed(OFFICES, (o) => ({
+      city: o.city,
+      addr: o.addr,
+      label: o.label,
+      isHead: Boolean(o.isHead),
+    })),
     disclaimer: FOOTER.disclaimer,
   });
 
@@ -201,8 +206,6 @@ async function build() {
     _type: "contactPage",
     heading: "Contact Us",
     intro: "Tell us what you need and our team will map the right path within 24 hours.",
-    headOffice: HEAD_OFFICE,
-    branches: keyed(BRANCHES, (b) => ({ city: b.city, addr: b.addr })),
   });
 
   // service categories + services
